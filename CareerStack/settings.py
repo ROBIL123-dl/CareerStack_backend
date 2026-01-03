@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from decouple import config
+import redis
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+    'rest_framework',
+    'authentication'
 ]
 
 MIDDLEWARE = [
@@ -49,6 +51,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+AUTH_USER_MODEL = 'authentication.User'
 
 ROOT_URLCONF = 'CareerStack.urls'
 
@@ -69,6 +73,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'CareerStack.wsgi.application'
 
+#Redis
+REDIS_CLIENT = redis.Redis(
+    host='redis-15268.c330.asia-south1-1.gce.cloud.redislabs.com',
+    port=15268,
+    decode_responses=True,
+    username="default",
+    password="rP5wDD8t8akLPtxa9XT5tTEh24fYEz8L",
+)
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -84,6 +96,12 @@ DATABASES = {
     }
 }
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT =config("EMAIL_PORT")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
