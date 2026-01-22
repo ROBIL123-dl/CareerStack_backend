@@ -17,7 +17,6 @@ def send_email(email, sentence):
         )
         return True
     except ImproperlyConfigured as e:
-        print("enter inside the Improperlay configured")
         return False 
     except Exception as e:
         return False

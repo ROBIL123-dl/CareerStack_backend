@@ -14,7 +14,7 @@ def send_otp(email):
     redis_otp = REDIS_CLIENT.get(redis_key)
     if redis_otp:
         raise ValidationError(
-            "OTP already sent. Please enter the OTP or wait before resending."
+            "Wait for 2 minutes and Register again"
         )
     try:
         otp = generate_otp_int()
@@ -27,7 +27,7 @@ def send_otp(email):
         if not email_status:
             raise APIException("Failed to send OTP. Please try again later.")
 
-        REDIS_CLIENT.set(redis_key, otp, ex=300)
+        REDIS_CLIENT.set(redis_key, otp, ex=120)
         return True
 
     except Exception as e:
@@ -37,14 +37,18 @@ def send_otp(email):
 
 
 def send_to_verify_otp(email, otp):
+    print(email,otp)
     try:
         redis_key = f"otp:{email}"
         redis_otp = REDIS_CLIENT.get(redis_key)
-        if not redis_otp:
-            raise ValidationError("OTP expired or not found")
-        if str(otp) != str(redis_otp):
-            raise ValidationError("Invalid OTP!")
-        REDIS_CLIENT.delete(redis_key)
-        return True
+        print("redis_otp",redis_otp)
     except Exception:
         raise ValidationError("Something went wrong while verifying OTP")
+    if not redis_otp:
+            raise ValidationError("OTP expired or not found")
+    if str(otp) != str(redis_otp):
+            print("not valid otp")
+            raise ValidationError("Invalid OTP!")
+    REDIS_CLIENT.delete(redis_key)
+    return True
+   
